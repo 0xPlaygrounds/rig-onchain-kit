@@ -1,7 +1,7 @@
 # Rig Onchain Kit
 
-A rig companion crate for building AI-powered applications that interact natively
-with blockchain networks. Combines LLM capabilities with secure blockchain
+A [rig](https://github.com/0xPlaygrounds/rig) companion crate for building AI-powered applications that interact natively
+with blockchain networks built in partnership with [listen](https://github.com/piotrostr/listen). Combines LLM capabilities with secure blockchain
 operations to create intelligent agents capable of executing complex on-chain
 interactions across Solana and EVM networks.
 
