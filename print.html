@@ -1,0 +1,743 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>rig-onchain-kit</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">rig-onchain-kit</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p><strong>Rig Onchain Kit</strong> is a robust framework for building AI-powered applications
+that interact natively with blockchain networks. Combining the cognitive
+capabilities of large language models with secure blockchain operations, this
+toolkit enables developers to create intelligent agents capable of executing
+complex on-chain interactions across both Solana and EVM-compatible networks.</p>
+<p>At its core, Rig Onchain Kit merges:</p>
+<ul>
+<li>The <strong><code>rig-core</code></strong> AI agent framework for natural language processing and
+decision-making</li>
+<li>The <strong><code>listen</code></strong> blockchain library for Solana and EVM transaction
+orchestration</li>
+<li>A <strong>production-ready HTTP service</strong> with real-time streaming capabilities</li>
+<li>Secure <strong>multi-chain wallet management</strong> through Privy integration</li>
+</ul>
+<p>The toolkit provides pre-built agents equipped with essential blockchain
+operations including token swaps (via Jupiter and Uniswap), asset transfers,
+balance queries, and smart contract interactions. Developers can extend
+functionality using the <code>#[tool]</code> macro system to create custom operations
+while maintaining strict security boundaries through the <code>SignerContext</code>
+architecture.</p>
+<p>Key differentiators:</p>
+<ul>
+<li><strong>Dual-chain First</strong> - Native support for Solana and EVM ecosystems with
+automatic RPC configuration</li>
+<li><strong>Secure by Design</strong> - Thread-local signer isolation and Privy-based
+authentication for production deployments</li>
+<li><strong>Real-time Streaming</strong> - SSE-enabled HTTP service handles concurrent user
+sessions with tool call transparency</li>
+<li><strong>Extensible Tool System</strong> - Combine prebuilt DeFi operations with custom
+logic through macro-driven tool creation</li>
+<li><strong>Wallet Agnostic</strong> - Supports both local key management and Privy-embedded
+wallets for user-friendly onboarding</li>
+</ul>
+<p>Whether building trading assistants, portfolio managers, or DeFi automation
+tools, Rig Onchain Kit abstracts blockchain complexity while maintaining full
+control over transaction security and model behavior. The included HTTP service
+layer enables seamless integration with web frontends while the modular
+architecture allows incremental adoption of specific components.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>In order to quickly get set-up, you can add Rig Onchain Kit to your project with</p>
+<pre><code class="language-bash">cargo add rig-onchain-kit --features full
+</code></pre>
+<p>Note that full contains both Solana, EVM and http features, where Solana and EVM are available separately</p>
+<pre><code class="language-bash">cargo add rig-onchain-kit --features solana  # less dependencies
+</code></pre>
+<p>If you need to add custom tools, with the <code>#[tool]</code> macro, be sure to</p>
+<pre><code class="language-bash">cargo add rig-tool-macro
+</code></pre>
+<p>In case you are running in a remote environment, should you run into
+SSL errors - be sure to include the TLS deps, with</p>
+<pre><code class="language-bash">sudo apt-get update &amp;&amp; sudo apt-get install -y \
+    ca-certificates \
+    openssl \
+    libssl3
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
+<p>Rig-onchain-kit uses below environment variables, each is corresponding to
+given features, e.g. <code>--features solana</code> is going to require the <code># solana</code> env
+vars set.</p>
+<pre><code class="language-sh">ANTHROPIC_API_KEY=""
+
+# solana
+SOLANA_PRIVATE_KEY=""
+SOLANA_RPC_URL=""
+
+# evm
+ETHEREUM_PRIVATE_KEY=""
+ETHEREUM_RPC_URL=""
+
+# http
+PRIVY_APP_ID=""
+PRIVY_APP_SECRET=""
+PRIVY_VERIFICATION_KEY=""
+</code></pre>
+<p>In case the <code>http</code> feature is used, the private keys are managed by Privy,
+making the <code>SOLANA_PRIVATE_KEY</code> and <code>ETHEREUM_PRIVATE_KEY</code> no longer required.</p>
+<p>The default agents are using Claude under the hood, which maintains the balance
+of speed and accuracy, other models might be supported in the future but
+currently, Claude is best-in-class</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h1>
+<p>First, ensure the <a href="./installation.html">installation</a> and the <a href="./configuration.html">configuration</a> steps are completed</p>
+<p>Import an agent of choice, along with the <code>SignerContext</code> and the local signer struct</p>
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use rig_onchain_kit::agent::create_solana_agent;
+use rig_onchain_kit::signer::SignerContext;
+use rig_onchain_kit::signer::solana::LocalSolanaSigner,
+use rig::completion::Prompt;
+
+#[tokio::main]
+async fn main() -&gt; anyhow::Result&lt;()&gt; {
+    let private_key = std::env::var("SOLANA_PRIVATE_KEY")?;
+
+    let signer = LocalSolanaSigner::new(private_key);
+
+    SignerContext::with_signer(Arc::new(signer), async {
+        let agent = create_solana_agent();
+        let response = agent.prompt("what is my public key?")?);
+        println!("{}", response);
+    });
+
+    Ok(())
+}</code></pre></pre>
+<p>For more examples, check out the <code>examples</code> directory, you can run each with
+<code>cargo run --example [name]</code></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tools"><a class="header" href="#tools">Tools</a></h1>
+<p>Any function can be transformed into a tool by applying a <code>#[tool]</code> macro onto it</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[tool] // &lt;- this is the macro
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Then, when creating the agent, in order to supply the agent with the tool</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let agent = rig::providers::anthropic::Client::from_env()
+    .agent(rig::providers::anthropic::CLAUDE_3_5_SONNET)
+    .preamble("you are a friendly calculator")
+    .max_tokens(1024)
+    .tool(Add) // tool becomes present thanks to the macro
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<p>After that, the model is able to perform actions!</p>
+<h2 id="built-in-tools"><a class="header" href="#built-in-tools">Built-in tools</a></h2>
+<blockquote>
+<p>ℹ️ To see all of the currently available tools, you can check
+<a href="https://github.com/piotrostr/listen/blob/main/listen-kit/src/solana/tools.rs">Solana</a>
+and
+<a href="https://github.com/piotrostr/listen/blob/main/listen-kit/src/evm/tools.rs">EVM</a>
+toolsets</p>
+</blockquote>
+<p>Throughout <code>rig-agent-kit</code> follows an opinionated way of implementing tools:</p>
+<ol start="0">
+<li>critical: ensuring that tools are called inside of the <code>SignerContext</code> block - this
+allows to identify the transaction signer - the owner, exposed into the closure</li>
+<li>creating a transaction for a given action</li>
+<li>executing the transaction with the <code>TransactionSigner</code> contained by the
+<code>SignerContext</code> (more on this in the next chapter)</li>
+<li>All of the tools return a <code>Result&lt;T&gt;</code></li>
+</ol>
+<p>Wrapping the signers is tricky, so <code>rig-onchain-kit</code> comes with
+helpers, both for EVM and Solana, arriving at this concise end-result</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[tool]
+pub async fn transfer_sol(to: String, amount: u64) -&gt; Result&lt;String&gt; {
+    execute_solana_transaction(move |owner| async move {
+        create_transfer_sol_tx(&amp;Pubkey::from_str(&amp;to)?, amount, &amp;owner).await
+    })
+    .await
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This design allows to use different transaction signing and sending methods and
+ensuring highly concurrent services using <code>rig-onchain-kit</code> work well</p>
+<h2 id="custom-tools"><a class="header" href="#custom-tools">Custom tools</a></h2>
+<p>In order to implement extra tools, you can import the helpers along with</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use rig_tool_macro::tool;
+use rig_agent_kit::solana::execute_solana_transaction;
+
+use crate::your_package::create_your_custom_tx;
+
+#[tool]
+pub async fn custom_tool() -&gt; Result&lt;String&gt; {
+    execute_solana_transaction(move |owner| async move {
+       // note: the `owner` address/pubkey is available as `String` to consume
+       create_your_custom_tx(&amp;owner).await
+    })
+    .await
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>⚠️ The tool macro acccepts only the native JSON types, like <code>string</code>, <code>bool</code>,
+<code>number</code> etc, structs and nested types are not supported, so neither
+a <code>Pubkey</code> and an <code>Address</code> are not allowed, those have to be parsed before
+passing to the corresponding transaction creators</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="signercontext"><a class="header" href="#signercontext">SignerContext</a></h1>
+<p>The <code>SignerContext</code> is a crucial building block of the <code>rig-onchain-kit</code> - it
+allows to restrict the scope of the signer private key into a thread-local variable</p>
+<p>It allows multi-tenancy, where any user chatting with the AI model is able to
+maintain the context of their account and their account only in a non-locking
+manner</p>
+<p><code>SignerContext</code> exposes a <code>::with_signer()</code> method, which takes
+a <code>TransactionSigner</code> trait</p>
+<p>It can be used like this</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn example() {
+    SignerContext::with_signer(Arc::new(signer), async {
+        // any tool calls inside of this block have the signer passed on
+    });
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>rig-onchain-kit</code> currently supports local signers (the <code>LocalSolanaSigner</code>,
+<code>LocalEvmSigner</code>) as well as the <code>PrivySigner</code> for remote signatures</p>
+<p>The core methods of the <code>TransactionSigner</code> can be implemented with any KMS,
+allowing integrations with keys stored inside of HashiCorp Vault, AWS KMS etc,
+as well as providers for smart transactions, like Helius or other wallet
+management providers, say Magic</p>
+<p>High-level interface is as per below snippet</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[async_trait]
+pub trait TransactionSigner: Send + Sync {
+    #[cfg(feature = "solana")]
+    fn pubkey(&amp;self) -&gt; String;
+
+    #[cfg(feature = "solana")
+    async fn sign_and_send_solana_transaction(
+        &amp;self,
+        _tx: &amp;mut solana_sdk::transaction::Transaction,
+    ) -&gt; Result&lt;String&gt;;
+
+    #[cfg(feature = "evm")]
+    fn address(&amp;self) -&gt; String;
+
+    #[cfg(feature = "evm")]
+    async fn sign_and_send_evm_transaction(
+        &amp;self,
+        _tx: alloy::rpc::types::TransactionRequest,
+    ) -&gt; Result&lt;String&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In summary, <code>SignerContext</code> combined with <code>TransactionSigner</code> provide the
+required level of abstraction, where remote keys are safely stored and each
+request is processed in its corresponding scope, making <code>rig-onchain-kit</code>
+a scalable solution</p>
+<p>For a production-style implementation with Privy, check out the
+<code>src/http/routes.rs</code> stream endpoint</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solana"><a class="header" href="#solana">Solana</a></h1>
+<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
+<ul>
+<li>
+<p><strong>Token Operations</strong></p>
+<ul>
+<li>Jupiter swap integration for token trading</li>
+<li>SPL token transfers and balance checks</li>
+<li>Token deployment capabilities</li>
+<li>Price fetching and portfolio management</li>
+</ul>
+</li>
+<li>
+<p><strong>Basic Operations</strong></p>
+<ul>
+<li>SOL transfers</li>
+<li>Balance queries</li>
+<li>Public key management</li>
+<li>Portfolio tracking</li>
+</ul>
+</li>
+<li>
+<p><strong>PumpFun Token Features</strong></p>
+<ul>
+<li>Token deployment with customizable parameters</li>
+<li>Buy/sell functionality</li>
+<li>Price discovery through DexScreener</li>
+</ul>
+</li>
+</ul>
+<h2 id="main-tools"><a class="header" href="#main-tools">Main Tools</a></h2>
+<p>The module exposes several key tools:</p>
+<pre><code>perform_jupiter_swap()    // Execute token swaps via Jupiter
+transfer_sol()            // Send SOL to another address
+transfer_spl_token()      // Transfer SPL tokens
+get_public_key()          // Retrieve signer's public key
+get_sol_balance()         // Check SOL balance
+get_spl_token_balance()   // Check SPL token balance
+deploy_pump_fun_token()   // Deploy on pump.fun
+fetch_token_price()       // Get current token prices
+get_portfolio()           // Retrieve full portfolio details
+search_on_dex_screener()  // search for a ticker/mint
+</code></pre>
+<h2 id="configuration-1"><a class="header" href="#configuration-1">Configuration</a></h2>
+<p>The module requires a Solana RPC URL which can be set via the <code>SOLANA_RPC_URL</code> environment variable. If not specified, it defaults to the public Solana mainnet RPC endpoint.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="evm"><a class="header" href="#evm">EVM</a></h1>
+<h2 id="key-features-1"><a class="header" href="#key-features-1">Key Features</a></h2>
+<ul>
+<li>
+<p><strong>Token Operations</strong></p>
+<ul>
+<li>Uniswap integration for token swaps</li>
+<li>ERC20 token transfers and allowance management</li>
+<li>Token balance checks</li>
+<li>Router approval verification</li>
+</ul>
+</li>
+<li>
+<p><strong>Basic Operations</strong></p>
+<ul>
+<li>ETH transfers</li>
+<li>Balance queries</li>
+<li>Wallet address management</li>
+<li>Gas estimation and transaction handling</li>
+</ul>
+</li>
+</ul>
+<h2 id="main-tools-1"><a class="header" href="#main-tools-1">Main Tools</a></h2>
+<p>The module exposes several key tools:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>verify_swap_router_has_allowance()  // Check DEX trading permissions
+approve_token_for_router_spend()    // Approve tokens for trading
+trade()                             // Execute token swaps via Uniswap
+transfer_eth()                      // Send ETH to another address
+transfer_erc20()                    // Transfer ERC20 tokens
+wallet_address()                    // Get current wallet address
+get_eth_balance()                   // Check ETH balance
+get_erc20_balance()                 // Check ERC20 token balance
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-2"><a class="header" href="#configuration-2">Configuration</a></h2>
+<p>The module requires an Ethereum RPC URL which can be set via the <code>ETHEREUM_RPC_URL</code> environment variable. It supports multiple EVM-compatible chains through provider configuration.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cross-chain"><a class="header" href="#cross-chain">Cross-chain</a></h1>
+<h2 id="key-features-2"><a class="header" href="#key-features-2">Key Features</a></h2>
+<ul>
+<li>
+<p><strong>Cross-chain Swaps &amp; Bridges</strong></p>
+<ul>
+<li>Seamless token swaps between Solana and EVM chains</li>
+<li>Bridge functionality for moving assets across chains</li>
+<li>Quote system for cost estimation</li>
+<li>Support for both native and wrapped tokens</li>
+</ul>
+</li>
+<li>
+<p><strong>Token Operations</strong></p>
+<ul>
+<li>ERC20 approval management for cross-chain bridges</li>
+<li>Token allowance verification</li>
+<li>Automatic address resolution based on chain type</li>
+</ul>
+</li>
+</ul>
+<h2 id="main-tools-2"><a class="header" href="#main-tools-2">Main Tools</a></h2>
+<p>The module exposes several key tools for cross-chain operations:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>get_multichain_quote()  // Get cost estimate for cross-chain swaps
+multichain_swap()       // Execute cross-chain token swaps/bridges
+check_approval()        // Verify ERC20 token approvals
+approve_token()         // Approve ERC20 tokens for bridge contracts
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-3"><a class="header" href="#configuration-3">Configuration</a></h2>
+<p>The module requires an Ethereum RPC URL which can be set via the
+<code>ETHEREUM_RPC_URL</code> environment variable. It supports multiple EVM-compatible
+chains through provider configuration.</p>
+<h2 id="important-notes"><a class="header" href="#important-notes">Important Notes</a></h2>
+<ol>
+<li>
+<p><strong>Token Decimals</strong>: Amount parameters must account for token decimals:</p>
+<ul>
+<li>USDC: 6 decimals (1 USDC = 1000000)</li>
+<li>SOL: 9 decimals (1 SOL = 1000000000)</li>
+<li>ETH: 18 decimals (1 ETH = 1000000000000000000)</li>
+</ul>
+</li>
+<li>
+<p><strong>Gas Requirements</strong>: Users must have native tokens (SOL/ETH) on both chains
+to cover gas fees, unless using sponsored transactions (coming soon).</p>
+</li>
+<li>
+<p><strong>Token Identification</strong>: Tokens can be specified using:</p>
+<ul>
+<li>Symbol (e.g., "USDC")</li>
+<li>Solana public key</li>
+<li>EVM contract address</li>
+</ul>
+</li>
+<li>
+<p><strong>Chain Support</strong>: Currently running Solana and Arbitrum, EVM is not fully
+multi-tenant, need some tweaks. Full coverage on the way</p>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="http-service"><a class="header" href="#http-service">HTTP Service</a></h1>
+<p>The <code>rig-onchain-kit</code> provides a production-ready HTTP service that enables:</p>
+<ul>
+<li>Server-Sent Events (SSE) streaming for real-time AI agent responses</li>
+<li>Multi-chain support (EVM and Solana) through feature flags</li>
+<li>User authentication and wallet management via Privy</li>
+<li>Concurrent handling of multiple chat sessions</li>
+</ul>
+<h2 id="core-endpoints"><a class="header" href="#core-endpoints">Core Endpoints</a></h2>
+<p>The service exposes these main endpoints:</p>
+<pre><code>POST /v1/stream   - Stream AI agent responses
+GET  /v1/auth     - Verify authentication status
+GET  /healthz     - Health check endpoint
+</code></pre>
+<h3 id="streaming-endpoint"><a class="header" href="#streaming-endpoint">Streaming Endpoint</a></h3>
+<p>The <code>/v1/stream</code> endpoint accepts:</p>
+<pre><code class="language-typescript">{
+  prompt: string,
+  chat_history: Message[],
+  chain: "solana" | "evm" | "pump" // Chain selection
+}
+</code></pre>
+<p>It returns a Server-Sent Events stream containing:</p>
+<pre><code class="language-typescript">{
+  type: "Message" | "ToolCall" | "Error",
+  content: {
+    // For Message: string with AI response
+    // For ToolCall: { name: string, result: string }
+    // For Error: error message string
+  }
+}
+</code></pre>
+<h2 id="features"><a class="header" href="#features">Features</a></h2>
+<h3 id="chain-selection"><a class="header" href="#chain-selection">Chain Selection</a></h3>
+<p>The service supports multiple blockchain environments through feature flags:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Select agent based on chain parameter
+match request.chain.as_deref() {
+    #[cfg(feature = "solana")]
+    Some("solana") =&gt; state.solana_agent.clone(),
+    #[cfg(feature = "evm")]
+    Some("evm") =&gt; state.evm_agent.clone(),
+    // ...
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="concurrent-sessions"><a class="header" href="#concurrent-sessions">Concurrent Sessions</a></h3>
+<p>The service handles multiple simultaneous chat sessions using Tokio channels and tasks:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (tx, rx) = tokio::sync::mpsc::channel::&lt;sse::Event&gt;(32);
+spawn_with_signer(signer, || async move {
+    // Handle individual chat session
+}).await;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="keep-alive--retry-logic"><a class="header" href="#keep-alive--retry-logic">Keep-alive &amp; Retry Logic</a></h3>
+<p>The SSE implementation includes built-in keep-alive and retry mechanisms:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>sse::Sse::from_infallible_receiver(rx)
+    .with_keep_alive(Duration::from_secs(15))
+    .with_retry_duration(Duration::from_secs(10))
+<span class="boring">}</span></code></pre></pre>
+<h2 id="configuration-4"><a class="header" href="#configuration-4">Configuration</a></h2>
+<p>The service is configured through the <code>AppState</code> which manages:</p>
+<ul>
+<li>Chain-specific AI agents</li>
+<li>Wallet manager instance</li>
+<li>Authentication settings</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let state = AppState::builder()
+    .with_wallet_manager(wallet_manager)
+    .with_solana_agent(solana_agent)    // Optional
+    .with_evm_agent(evm_agent)          // Optional
+    .build()?;
+<span class="boring">}</span></code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="why-and-how"><a class="header" href="#why-and-how">Why and how?</a></h1>
+<p>While having a possibility of creating local agents is nice, it is all about scale</p>
+<p>In order to provide AI Agent powered interactions for the users, it is crucial to be able to expose the agents built with <code>rig-onchain-kit</code> as a service, consumable by a frontend</p>
+<p>Luckily, the framework comes pre-packaged with a production-ready service for maintaining thousands of simulatenous conversations, each completely encapsulated</p>
+<p>To provide a backend for multi-VM platform, with end user wallet management for both EVM and Solana, you can</p>
+<pre><code class="language-sh">git clone https://github.com/piotrostr/listen
+cd listen/listen-kit
+cp .env.example .env
+vi .env # fill in the env vars, include the PRIVY_* variables
+cargo run --bin server --features full
+</code></pre>
+<p>To find the configuration variables, you can go to your Privy dashboard</p>
+<blockquote>
+<p>ℹ️ the <code>PRIVY_VERIFICATION_KEY</code> has to come in the format of
+<code>"-----BEGIN PUBLIC KEY-----\n&lt;secret&gt;\n-----END PUBLIC KEY-----"</code>
+note how there are <code>'\n'</code> newline separators, entire secret in a single line</p>
+</blockquote>
+<p>Next chapter outlines how to authenticate your users.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="authentication"><a class="header" href="#authentication">Authentication</a></h1>
+<p>After running <code>cargo run --bin server --features full</code>, you can make requests
+to the backend from a frontend that implements Privy authentication</p>
+<p>The service exposed by <code>rig-onchain-kit</code> with the <code>http</code> feature uses Privy for
+frontend to backend authentication</p>
+<blockquote>
+<p>⚠️ Be sure to include the same <code>PRIVY_APP_ID</code> both in the backend and frontend
+configuration</p>
+</blockquote>
+<p>On your frontend, Privy can be set up as per the documentation
+<a href="https://docs.privy.io/">here</a></p>
+<p>The backend expects the user to have created an embedded wallet and have
+delegated access to the application, for both the EVM and Solana embedded
+wallets</p>
+<p>After completing the authentication, you can use the <code>getAuthToken</code> method from
+the Privy SDK to authenticate a given user on the backend</p>
+<p>Frontend (React example)</p>
+<pre><code class="language-ts">import { usePrivy } from "@privy-io/react-auth";
+import { useCallback } from "react";
+
+function Chat() {
+  const { getAccessToken } = usePrivy();
+
+  const sendMessage = useCallback(async (userMessage: string) =&gt; {
+    const body = JSON.stringify({
+      prompt: userMessage,
+      chat_history: chat_history,
+      chain: chatType,
+    });
+
+    // post the request to the `rig-onchain-kit` service
+    const response = await fetch(config.API_BASE_URL + "/v1/stream", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + (await getAccessToken()),
+      },
+      body,
+    });
+  });
+}
+</code></pre>
+<p><a href="https://github.com/piotrostr/listen/blob/main/dashboard/src/hooks/useChat.ts">Full example</a></p>
+<p>On the backend, the token is picked up by middleware and passed onto the the
+Privy <code>WalletManager</code> implementation, which parses the JWT token sent from the
+frontend</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn validate_access_token(
+    &amp;self,
+    access_token: &amp;str,
+) -&gt; Result&lt;PrivyClaims&gt; {
+    let mut validation = Validation::new(Algorithm::ES256);
+    validation.set_issuer(&amp;["privy.io"]);
+    validation.set_audience(&amp;[self.privy_config.app_id.clone()]);
+
+    let key = DecodingKey::from_ec_pem(
+        self.privy_config.verification_key.as_bytes(),
+    )?;
+
+    let token_data =
+        decode::&lt;PrivyClaims&gt;(access_token, &amp;key, &amp;validation)
+            .map_err(|_| anyhow!("Failed to authenticate"))?;
+
+    Ok(token_data.claims)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Afterwards, the given user profile is fetched to find the wallets and construct
+the <code>UserSession</code>, that is later used for finding the signing address to use</p>
+<p>This prevents unauthorized access as well as allows to bind the request to
+a given user</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>
