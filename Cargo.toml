@@ -1,6 +1,6 @@
 [package]
-name = "rig-onchain-kit"
-version = "0.1.0"
+name = "listen-kit"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 description = "Blockchain actions for AI agents"
