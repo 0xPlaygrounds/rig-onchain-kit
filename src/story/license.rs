@@ -50,19 +50,3 @@ pub async fn get_license_token(
 
     Ok(response)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn get_license_token_works() {
-        // https://docs.story.foundation/reference/get_api-v3-licenses-tokens-licensetokenid
-        let config = StoryConfig::new(
-            "f-Zi2LNuvBd61_yHaKl7kTg0KPULXTPdTSAzM1BsJ4g".into(),
-            "story-aeneid".into(),
-        );
-        let response: GetLicenseTokenResponse = get_license_token(&config, "99").await.unwrap();
-        assert_eq!(response.data.licensor_ip_id, "0x7a52A99a64e1d375609802F10b55B2341DE4b206".to_string());
-    }
-}

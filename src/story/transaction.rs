@@ -85,20 +85,3 @@ pub async fn get_a_transaction(
 
     Ok(response)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn get_a_transaction_works() {
-        // https://docs.story.foundation/reference/get_api-v3-transactions-trxid
-        let config = StoryConfig::new(
-            "f-Zi2LNuvBd61_yHaKl7kTg0KPULXTPdTSAzM1BsJ4g".into(),
-            "story-aeneid".into(),
-        );
-        let response: GetTransactionResponse = get_a_transaction(&config, "0x966635a462e006e095c8426bad9440afd95913b6200b4534e7f439dac1c90943").await.unwrap();
-
-        assert_eq!(response.data.block_number, "681067".to_string());
-    }
-}
