@@ -51,7 +51,7 @@ async fn main() -> anyhow::Result<()> {
 
 ## Documentation
 
-Read the [full documentation](https://docs.rig.ai/rig-onchain-kit) to learn more
+Read the [full documentation](https://0xplaygrounds.github.io/rig-onchain-kit/) to learn more
 
 ## License
 
