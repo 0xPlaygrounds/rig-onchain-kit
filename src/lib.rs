@@ -7,15 +7,12 @@ pub mod solana;
 #[cfg(feature = "evm")]
 pub mod evm;
 
-#[cfg(feature = "http")]
-pub mod wallet_manager;
-
 pub mod common;
 pub mod cross_chain;
+pub mod data;
 pub mod dexscreener;
 pub mod reasoning_loop;
 pub mod signer;
-pub mod story;
 
 #[ctor::ctor]
 fn init() {
@@ -24,8 +21,9 @@ fn init() {
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| {
-                    tracing_subscriber::EnvFilter::new("info")
-                        .add_directive("listen_kit=info".parse().unwrap())
+                    tracing_subscriber::EnvFilter::new("info").add_directive(
+                        "rig_onchain_kit=info".parse().unwrap(),
+                    )
                 }),
         )
         .with_test_writer()

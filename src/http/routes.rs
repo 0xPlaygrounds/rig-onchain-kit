@@ -1,6 +1,7 @@
 use super::middleware::verify_auth;
 use super::state::AppState;
 use crate::common::spawn_with_signer;
+use crate::cross_chain::agent::create_cross_chain_agent;
 use crate::reasoning_loop::LoopResponse;
 use crate::reasoning_loop::ReasoningLoop;
 use crate::signer::privy::PrivySigner;
@@ -11,6 +12,8 @@ use actix_web::{
 use actix_web_lab::sse;
 use anyhow::Result;
 use rig::completion::Message;
+use rig::message::UserContent;
+use rig::OneOrMany;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
@@ -19,9 +22,12 @@ use std::time::Duration;
 #[derive(Deserialize)]
 pub struct ChatRequest {
     prompt: String,
+    #[serde(deserialize_with = "deserialize_messages")]
     chat_history: Vec<Message>,
     #[serde(default)]
     chain: Option<String>,
+    #[serde(default)]
+    preamble: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -47,12 +53,13 @@ async fn stream(
 ) -> impl Responder {
     let user_session = match verify_auth(&req).await {
         Ok(s) => s,
-        Err(_) => {
+        Err(e) => {
             let (tx, rx) = tokio::sync::mpsc::channel::<sse::Event>(1);
             let error_event = sse::Event::Data(sse::Data::new(
-                serde_json::to_string(&StreamResponse::Error(
-                    "Error: unauthorized".to_string(),
-                ))
+                serde_json::to_string(&StreamResponse::Error(format!(
+                    "Error: unauthorized: {}",
+                    e
+                )))
                 .unwrap(),
             ));
             let _ = tx.send(error_event).await;
@@ -62,13 +69,54 @@ async fn stream(
 
     let (tx, rx) = tokio::sync::mpsc::channel::<sse::Event>(32);
 
-    // Select the appropriate agent based on the chain parameter
+    let preamble = request.preamble.clone();
+
+    // Select the appropriate agent based on the chain parameter and preamble
     let agent = match request.chain.as_deref() {
         #[cfg(feature = "solana")]
-        Some("solana") => state.solana_agent.clone(),
+        Some("solana") => match create_solana_agent(preamble).await {
+            Ok(agent) => Arc::new(agent),
+            Err(e) => {
+                let error_event = sse::Event::Data(sse::Data::new(
+                    serde_json::to_string(&StreamResponse::Error(format!(
+                        "Failed to create Solana agent: {}",
+                        e
+                    )))
+                    .unwrap(),
+                ));
+                let _ = tx.send(error_event).await;
+                return sse::Sse::from_infallible_receiver(rx);
+            }
+        },
         #[cfg(feature = "evm")]
-        Some("evm") => state.evm_agent.clone(),
-        Some("omni") => state.omni_agent.clone(),
+        Some("evm") => match create_evm_agent(preamble).await {
+            Ok(agent) => Arc::new(agent),
+            Err(e) => {
+                let error_event = sse::Event::Data(sse::Data::new(
+                    serde_json::to_string(&StreamResponse::Error(format!(
+                        "Failed to create EVM agent: {}",
+                        e
+                    )))
+                    .unwrap(),
+                ));
+                let _ = tx.send(error_event).await;
+                return sse::Sse::from_infallible_receiver(rx);
+            }
+        },
+        Some("omni") => match create_cross_chain_agent(preamble).await {
+            Ok(agent) => Arc::new(agent),
+            Err(e) => {
+                let error_event = sse::Event::Data(sse::Data::new(
+                    serde_json::to_string(&StreamResponse::Error(format!(
+                        "Failed to create cross-chain agent: {}",
+                        e
+                    )))
+                    .unwrap(),
+                ));
+                let _ = tx.send(error_event).await;
+                return sse::Sse::from_infallible_receiver(rx);
+            }
+        },
         Some(chain) => {
             let error_event = sse::Event::Data(sse::Data::new(
                 serde_json::to_string(&StreamResponse::Error(format!(
@@ -94,19 +142,18 @@ async fn stream(
 
     let prompt = request.prompt.clone();
     let messages = request.chat_history.clone();
+    println!("prompt: {}", prompt);
+    println!("messages: {:?}", messages);
 
-    let signer: Arc<dyn TransactionSigner> = Arc::new(PrivySigner::new(
-        state.wallet_manager.clone(),
-        user_session.clone(),
-    ));
+    let signer: Arc<dyn TransactionSigner> =
+        Arc::new(PrivySigner::new(state.privy.clone(), user_session.clone()));
 
     spawn_with_signer(signer, || async move {
         let reasoning_loop = ReasoningLoop::new(agent).with_stdout(false);
 
         let mut initial_messages = messages;
-        initial_messages.push(Message {
-            role: "user".to_string(),
-            content: prompt,
+        initial_messages.push(Message::User {
+            content: OneOrMany::one(UserContent::text(prompt)),
         });
 
         // Create a channel for the reasoning loop to send responses
@@ -188,4 +235,55 @@ async fn auth(req: HttpRequest) -> Result<HttpResponse, Error> {
         "status": "ok",
         "wallet_address": user_session.wallet_address,
     })))
+}
+
+fn deserialize_messages<'de, D>(
+    deserializer: D,
+) -> Result<Vec<Message>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    struct RawMessage {
+        role: String,
+        content: serde_json::Value,
+    }
+
+    let raw_messages: Vec<RawMessage> = Vec::deserialize(deserializer)?;
+
+    raw_messages
+        .into_iter()
+        .map(|raw| {
+            let content = match raw.role.as_str() {
+                "user" => {
+                    let content = match raw.content {
+                        serde_json::Value::String(s) => {
+                            OneOrMany::one(UserContent::Text(s.into()))
+                        }
+                        _ => {
+                            return Err(serde::de::Error::custom(
+                                "Invalid user content format",
+                            ))
+                        }
+                    };
+                    Message::User { content }
+                }
+                "assistant" => {
+                    let content = match raw.content {
+                        serde_json::Value::String(s) => {
+                            OneOrMany::one(s.into())
+                        }
+                        _ => {
+                            return Err(serde::de::Error::custom(
+                                "Invalid assistant content format",
+                            ))
+                        }
+                    };
+                    Message::Assistant { content }
+                }
+                _ => return Err(serde::de::Error::custom("Invalid role")),
+            };
+            Ok(content)
+        })
+        .collect()
 }
