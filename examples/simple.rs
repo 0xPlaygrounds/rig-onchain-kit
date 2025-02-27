@@ -1,9 +1,9 @@
 #[cfg(feature = "solana")]
 use {
     anyhow::Result,
-    listen_kit::signer::solana::LocalSolanaSigner,
-    listen_kit::signer::SignerContext,
-    listen_kit::solana::util::env,
+    rig_onchain_kit::signer::solana::LocalSolanaSigner,
+    rig_onchain_kit::signer::SignerContext,
+    rig_onchain_kit::solana::util::env,
     rig::streaming::{stream_to_stdout, StreamingPrompt},
     std::sync::Arc,
 };
@@ -11,7 +11,7 @@ use {
 #[cfg(feature = "solana")]
 #[tokio::main]
 async fn main() -> Result<()> {
-    use listen_kit::solana::tools::GetPortfolio;
+    use rig_onchain_kit::solana::tools::GetPortfolio;
 
     let signer = LocalSolanaSigner::new(env("SOLANA_PRIVATE_KEY"));
     SignerContext::with_signer(Arc::new(signer), async {

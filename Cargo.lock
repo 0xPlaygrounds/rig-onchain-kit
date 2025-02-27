@@ -1593,6 +1593,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "blockhash-cache"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85a5e6a758d11bd6ece5bd4b223750ba42cdc06055691c7be15cb9540bc451fd"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "bincode",
+ "bs58",
+ "hex",
+ "once_cell",
+ "reqwest 0.11.27",
+ "serde",
+ "serde_json",
+ "solana-sdk",
+ "thiserror 2.0.11",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "blst"
 version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2644,6 +2665,22 @@ checksum = "3c3e4e0dd3673c1139bf041f3008816d9cf2946bbfac2945c09e523b8d7b05b2"
 dependencies = [
  "event-listener 5.4.0",
  "pin-project-lite",
+]
+
+[[package]]
+name = "evm-approvals"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4c990e19375dedd465348921b3ddde730ce737f68d6065465b3e4ea866a450ed"
+dependencies = [
+ "anyhow",
+ "dotenv",
+ "reqwest 0.12.12",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.11",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -3771,57 +3808,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "lifi"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eead1d042c0d6d56730f95b9b11d40789126101c3ce9004508ff703f249e2bb"
+dependencies = [
+ "anyhow",
+ "reqwest 0.12.12",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.11",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.4.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
-
-[[package]]
-name = "listen-kit"
-version = "0.3.0"
-dependencies = [
- "actix-cors",
- "actix-web",
- "actix-web-lab",
- "alloy",
- "anyhow",
- "async-trait",
- "base64 0.22.1",
- "bincode",
- "borsh 1.5.5",
- "chrono",
- "ctor",
- "dotenv",
- "env_logger",
- "futures",
- "futures-util",
- "hex",
- "jsonwebtoken",
- "log",
- "once_cell",
- "rand 0.8.5",
- "redis",
- "reqwest 0.12.12",
- "rig-core 0.6.1",
- "rig-tool-macro",
- "serde",
- "serde_json",
- "serde_with",
- "solana-account-decoder",
- "solana-client",
- "solana-sdk",
- "solana-transaction-status",
- "spl-associated-token-account 6.0.0",
- "spl-token 7.0.0",
- "thiserror 2.0.11",
- "timed",
- "tokio",
- "tokio-stream",
- "tracing",
- "tracing-subscriber",
- "uniswap-sdk-core",
- "uniswap-v3-sdk",
-]
 
 [[package]]
 name = "litemap"
@@ -4511,6 +4516,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "privy"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5ff76f5cac08fa80de97b4482c43834bbeba4307187b0731d9ded6fa6061d85"
+dependencies = [
+ "anyhow",
+ "base64 0.22.1",
+ "jsonwebtoken",
+ "reqwest 0.12.12",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.11",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "proc-macro-crate"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5013,25 +5035,6 @@ dependencies = [
 
 [[package]]
 name = "rig-core"
-version = "0.6.1"
-source = "git+https://github.com/piotrostr/rig?branch=feat%2Fanthropic-streaming-api#2e2f6bbb72a36bf64942932074d4f88e02d2becc"
-dependencies = [
- "bytes",
- "futures",
- "glob",
- "ordered-float",
- "reqwest 0.11.27",
- "schemars",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "rig-core"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f8190b6b290cc0b9bd7ff44156e288f0df82c2d3cbccc9ffa1c44493b38ffc4"
@@ -5045,6 +5048,76 @@ dependencies = [
  "serde_json",
  "thiserror 1.0.69",
  "tracing",
+]
+
+[[package]]
+name = "rig-core"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43348451da1864f173a4f615ab9ddda1f6017d6493564ac70db950f0b2a103dd"
+dependencies = [
+ "async-stream",
+ "bytes",
+ "futures",
+ "glob",
+ "ordered-float",
+ "reqwest 0.11.27",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "rig-onchain-kit"
+version = "1.0.0"
+dependencies = [
+ "actix-cors",
+ "actix-web",
+ "actix-web-lab",
+ "alloy",
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "bincode",
+ "blockhash-cache",
+ "borsh 1.5.5",
+ "chrono",
+ "ctor",
+ "dotenv",
+ "env_logger",
+ "evm-approvals",
+ "futures",
+ "futures-util",
+ "hex",
+ "jsonwebtoken",
+ "lifi",
+ "log",
+ "once_cell",
+ "privy",
+ "rand 0.8.5",
+ "redis",
+ "reqwest 0.12.12",
+ "rig-core 0.9.0",
+ "rig-tool-macro",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "solana-account-decoder",
+ "solana-client",
+ "solana-sdk",
+ "solana-transaction-status",
+ "spl-associated-token-account 6.0.0",
+ "spl-token 7.0.0",
+ "thiserror 2.0.11",
+ "timed",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "tracing-subscriber",
+ "uniswap-sdk-core",
+ "uniswap-v3-sdk",
 ]
 
 [[package]]
@@ -5527,9 +5600,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.137"
+version = "1.0.139"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "930cfb6e6abf99298aaad7d29abbef7a9999a9a8806a40088f55f0dcec03146b"
+checksum = "44f86c3acccc9c65b153fe1b85a3be07fe5515274ec9f0653b4a0875731c72a6"
 dependencies = [
  "itoa",
  "memchr",
